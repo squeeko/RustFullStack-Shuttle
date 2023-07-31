@@ -1,30 +1,31 @@
-use actix_web::{get, web::ServiceConfig};
+use actix_web::web::ServiceConfig;
+use api_lib::health::{hello_world, version};
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sqlx::Executor;
 
-#[get("/")]
-async fn hello_world() -> &'static str {
-    "Hello World!"
-}
-
-// #[get("/version")]
-// async fn version() -> &'static str {
-//     "version = 0.0.0"
+// #[get("/")]
+// async fn hello_world() -> &'static str {
+//     "Hello World!"
 // }
 
-#[get("/version")]
-async fn version(db: actix_web::web::Data<sqlx::PgPool>) -> String {
-    tracing::info!("Getting version");
-    let result: Result<String, sqlx::Error> = sqlx::query_scalar("SELECT version()")
-        .fetch_one(db.get_ref())
-        .await;
+// // #[get("/version")]
+// // async fn version() -> &'static str {
+// //     "version = 0.0.0"
+// // }
 
-    match result {
-        Ok(version) => version,
-        Err(e) => format!("Error: {:?}", e),
-    }
-}
+// #[get("/version")]
+// async fn version(db: actix_web::web::Data<sqlx::PgPool>) -> String {
+//     tracing::info!("Getting version");
+//     let result: Result<String, sqlx::Error> = sqlx::query_scalar("SELECT version()")
+//         .fetch_one(db.get_ref())
+//         .await;
+
+//     match result {
+//         Ok(version) => version,
+//         Err(e) => format!("Error: {:?}", e),
+//     }
+// }
 
 #[shuttle_runtime::main]
 async fn actix_web(
