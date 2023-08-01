@@ -1,5 +1,5 @@
 use actix_web::web::ServiceConfig;
-use api_lib::health::health;
+
 use shuttle_actix_web::ShuttleActixWeb;
 use shuttle_runtime::CustomError;
 use sqlx::Executor;
@@ -37,9 +37,22 @@ async fn actix_web(
         .map_err(CustomError::new)?;
 
     let pool = actix_web::web::Data::new(pool);
+    // let config = move |cfg: &mut ServiceConfig| {
+    //     // cfg.service(hello_world).service(version);
+    //     cfg.app_data(pool).service(health);
+    // };
+
     let config = move |cfg: &mut ServiceConfig| {
         // cfg.service(hello_world).service(version);
-        cfg.app_data(pool).service(health);
+
+        // Using the configure method to move endpoints around
+        // cfg.app_data(pool).configure(|c| {
+        //     c.service(health);
+        // });
+
+        // Refactor  to use the configure method
+
+        cfg.app_data(pool).configure(api_lib::health::service);
     };
 
     Ok(config.into())
